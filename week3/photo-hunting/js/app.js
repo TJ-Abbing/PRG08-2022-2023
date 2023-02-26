@@ -39,60 +39,10 @@ function classify() {
 
 // A util function to create UI buttons
 function setupButtons() {
-  // When the happy button is pressed, add the current frame
-  // from the video with a label of "happy" to the classifier
-  buttonA = select("#happyButton");
-  buttonA.mousePressed(function() {
-    classifier.addImage("happy");
-    select("#amountOfHappyFaces").html((happyFaces += 1));
-  });
-
-  // When the neutral button is pressed, add the current frame
-  // from the video with a label of "neutral" to the classifier
-  buttonB = select("#neutralButton");
-  buttonB.mousePressed(function() {
-    classifier.addImage("neutral");
-    select("#amountOfNeutralFaces").html((neutralFaces += 1));
-  });
-
-  // When the neutral button is pressed, add the current frame
-  // from the video with a label of "neutral" to the classifier
-  buttonC = select("#sadButton");
-  buttonC.mousePressed(function() {
-    classifier.addImage("sad");
-    select("#amountOfSadFaces").html((sadFaces += 1));
-  });
-
-  // Train Button
-  train = select("#train");
-  train.mousePressed(function() {
-    classifier.train(function(lossValue) {
-      if (lossValue) {
-        loss = lossValue;
-        select("#loss").html(`Loss: ${loss}`);
-      } else {
-        select("#loss").html(`Done Training! Final Loss: ${loss}`);
-      }
-    });
-  });
 
   // Predict Button
   buttonPredict = select("#buttonPredict");
   buttonPredict.mousePressed(classify);
-
-  // Save model
-  saveBtn = select("#save");
-  saveBtn.mousePressed(function() {
-    classifier.save();
-  });
-
-  // Load model
-  loadBtn = select("#load");
-  loadBtn.changed(function() {
-    classifier.load(loadBtn.elt.files, function() {
-      select("#modelStatus").html("Custom Model Loaded!");
-    });
-  });
 }
 
 // Show the results
