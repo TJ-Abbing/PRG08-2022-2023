@@ -2,9 +2,9 @@ let featureExtractor;
 let classifier;
 let video;
 let loss;
-let dogImages = 0;
-let catImages = 0;
-let badgerImages = 0;
+let happyFaces = 0;
+let neutralFaces = 0;
+let sadFaces = 0;
 
 function setup() {
   noCanvas();
@@ -44,7 +44,7 @@ function setupButtons() {
   buttonA = select("#happyButton");
   buttonA.mousePressed(function() {
     classifier.addImage("happy");
-    select("#amountOfHappyFaces").html((catImages += 1));
+    select("#amountOfHappyFaces").html((happyFaces += 1));
   });
 
   // When the neutral button is pressed, add the current frame
@@ -52,7 +52,7 @@ function setupButtons() {
   buttonB = select("#neutralButton");
   buttonB.mousePressed(function() {
     classifier.addImage("neutral");
-    select("#amountOfNeutralFaces").html((dogImages += 1));
+    select("#amountOfNeutralFaces").html((neutralFaces += 1));
   });
 
   // When the neutral button is pressed, add the current frame
@@ -60,7 +60,7 @@ function setupButtons() {
   buttonC = select("#sadButton");
   buttonC.mousePressed(function() {
     classifier.addImage("sad");
-    select("#amountOfSadFaces").html((badgerImages += 1));
+    select("#amountOfSadFaces").html((sadFaces += 1));
   });
 
   // Train Button
