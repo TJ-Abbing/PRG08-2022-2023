@@ -2,8 +2,25 @@ let model
 let videoWidth, videoHeight
 let ctx, canvas
 const log = document.querySelector("#array")
+const counter = document.querySelector("#counter")
 const VIDEO_WIDTH = 720
 const VIDEO_HEIGHT = 405
+
+const k = 3
+const machine = new kNear(k)
+
+// video fallback
+navigator.getUserMedia = navigator.getUserMedia ||navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+
+// array posities van de vingerkootjes
+let fingerLookupIndices = {
+    thumb: [0, 1, 2, 3, 4],
+    indexFinger: [0, 5, 6, 7, 8],
+    middleFinger: [0, 9, 10, 11, 12],
+    ringFinger: [0, 13, 14, 15, 16],
+    pinky: [0, 17, 18, 19, 20]
+}
+
 
 //
 // start de applicatie
@@ -75,38 +92,51 @@ async function startLandmarkDetection(video) {
 // predict de locatie van de vingers met het model
 //
 async function predictLandmarks() {
-    ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height)
+    ctx.drawImage(video,0,0,videoWidth,videoHeight,0,0,canvas.width,canvas.height)
     // prediction!
-    const predictions = await model.estimateHands(video) // ,true voor flip
+    const predictions = await model.estimateHands(video)
     if (predictions.length > 0) {
-        drawHand(ctx, predictions[0].landmarks, predictions[0].annotations)
+        const result = predictions[0].landmarks
+        drawKeypoints(ctx, result, predictions[0].annotations)
+        logData(predictions)
     }
+
     // 60 keer per seconde is veel, gebruik setTimeout om minder vaak te predicten
     requestAnimationFrame(predictLandmarks)
+
     // setTimeout(()=>predictLandmarks(), 1000)
 }
 
+//
+// toon de eerste 20 waarden in een log - elk punt heeft een X, Y, Z waarde
+//
+function logData(predictions) {
+    let str = ""
+    console.log(predictions[0].landmarks)
+    for (let i = 0; i < 20; i++) {
+        str += predictions[0].landmarks[i][0] + ", " + predictions[0].landmarks[i][1] + ", " + predictions[0].landmarks[i][2] + ", "
+    }
+    log.innerText = str
+    console.log(str)
+}
 
 //
-// teken hand en vingers met de x,y coordinaten. de z waarde tekenen we niet.
+// teken hand en vingers
 //
-function drawHand(ctx, keypoints, annotations) {
-    // toon alle x,y,z punten van de hele hand in het log venster
-    log.innerText = keypoints.flat()
+function drawKeypoints(ctx, keypoints) {
+    const keypointsArray = keypoints;
 
-    // punten op alle kootjes kan je rechtstreeks uit keypoints halen 
-    for (let i = 0; i < keypoints.length; i++) {
-        const y = keypoints[i][0]
-        const x = keypoints[i][1]
+    for (let i = 0; i < keypointsArray.length; i++) {
+        const y = keypointsArray[i][0]
+        const x = keypointsArray[i][1]
         drawPoint(ctx, x - 2, y - 2, 3)
     }
 
-    // palmbase als laatste punt toevoegen aan elke vinger
-    let palmBase = annotations.palmBase[0]
-    for (let key in annotations) {
-        const finger = annotations[key]
-        finger.unshift(palmBase)
-        drawPath(ctx, finger, false)
+    const fingers = Object.keys(fingerLookupIndices)
+    for (let i = 0; i < fingers.length; i++) {
+        const finger = fingers[i]
+        const points = fingerLookupIndices[finger].map(idx => keypoints[idx])
+        drawPath(ctx, points, false)
     }
 }
 
@@ -139,3 +169,52 @@ function drawPath(ctx, points, closePath) {
 // start
 //
 main()
+
+// learn
+
+const rock_btn = document.getElementById("rock");
+rock_btn.addEventListener("click", function() {
+  learn([9,9,9], "rock");
+  console.log("Rock button pressed");
+});
+
+const paper_btn = document.getElementById("paper");
+paper_btn.addEventListener("click", function() {
+  learn([5,5,5], "paper");
+  console.log("Paper button pressed");
+});
+
+const scissor_btn = document.getElementById("scissor");
+scissor_btn.addEventListener("click", function() {
+  learn([7,7,7], "scissor");
+  console.log("Scissor button pressed");
+});
+
+const classify_btn = document.getElementById("classify");
+classify_btn.addEventListener("click", function() {
+  classify();
+  console.log("Classify button pressed");
+});
+
+function learn(data, label) {
+    machine.learn(data, label);
+    console.log("Learning", data, label);
+  }
+
+// classify knn
+function classify() {
+    let prediction = machine.classify([7, 7, 7]);
+    console.log(`I think it's a ${prediction}`);
+    
+    if (prediction === 'rock') {
+      console.log('Counterpick is paper.');
+      counter.innerText = 'I chose paper and won.';
+    } else if (prediction === 'paper') {
+      console.log('Counterpick is scissors.');
+      counter.innerText = 'I chose scissors and won.';
+    } else if (prediction === 'scissors') {
+      console.log('Counterpick is rock.');
+      counter.innerText = 'I chose rock and won.';
+    }
+  }
+  
