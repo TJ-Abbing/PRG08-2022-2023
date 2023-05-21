@@ -11,6 +11,7 @@ const labelOneBtn = document.querySelector("#labelOne");
 const labelTwoBtn = document.querySelector("#labelTwo");
 const labelThreeBtn = document.querySelector("#labelThree");
 const trainBtn = document.querySelector("#train");
+const saveBtn = document.querySelector('#save');
 
 labelOneBtn.addEventListener("click", () => {
     classifier.addImage('labelOne');
@@ -27,6 +28,9 @@ labelThreeBtn.addEventListener("click", () => {
 trainBtn.addEventListener("click", () => {
     train();
 });
+saveBtn.addEventListener("click", () => {
+    save();
+})
 
 if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
@@ -61,6 +65,16 @@ const classify = () => {
         label.innerHTML = result[0].label;
         });
     }, 1000);
+};
+
+const save = () => {
+    featureExtractor.save('feature_extractor_savefile', (error) => {
+        if (error) {
+            console.error('Error while saving feature extractor:', error);
+        } else {
+            console.log('Feature extractor file saved.');
+        }
+    });
 };
 
 label.innerText = "";
