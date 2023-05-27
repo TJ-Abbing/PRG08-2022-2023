@@ -7,30 +7,31 @@ const featureExtractor = ml5.featureExtractor('MobileNet', console.log('Model Lo
 // Create a new classifier using those features and with a video element
 const classifier = featureExtractor.classification(video, options, console.log('The video is ready.'));
 
-const labelOneBtn = document.querySelector("#labelOne");
-const labelTwoBtn = document.querySelector("#labelTwo");
-const labelThreeBtn = document.querySelector("#labelThree");
-const trainBtn = document.querySelector("#train");
-const saveBtn = document.querySelector('#save');
-
-labelOneBtn.addEventListener("click", () => {
-    classifier.addImage('labelOne');
-    console.log("Classified label one.");
+const labelBtns = ["labelOne", "labelTwo", "labelThree"].map(label => {
+    const btn = document.querySelector(`#${label}`);
+    btn.addEventListener("click", () => {
+        classifier.addImage(label);
+        console.log(`Classified ${label}.`);
+    });
+    return btn;
 });
-labelTwoBtn.addEventListener("click", () => {
-    classifier.addImage('labelTwo');
-    console.log("Classified label two.");
-});
-labelThreeBtn.addEventListener("click", () => {
-    classifier.addImage('labelThree');
-    console.log("Classified label three.");
-});
-trainBtn.addEventListener("click", () => {
-    train();
-});
-saveBtn.addEventListener("click", () => {
-    save();
+    
+document.querySelector('#train').addEventListener("click", () => {
+    classifier.train((lossValue) => {
+        console.log('Loss is', lossValue);
+        if (lossValue === null) {
+          console.log('Training completed.');
+          classify();
+        } else {
+          console.log('Continuing training...');
+        }
+    });
 })
+
+document.querySelector('#save').addEventListener("click", () => {
+    featureExtractor.save();
+    console.log("Model saved!");
+});
 
 if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
@@ -42,19 +43,6 @@ if (navigator.mediaDevices.getUserMedia) {
             console.log("Something went wrong!");
         });
 }
-
-// Retrain the network
-const train = () => {
-    classifier.train((lossValue) => {
-      console.log('Loss is', lossValue);
-      if (lossValue === null) {
-        console.log('Training completed.');
-        classify();
-      } else {
-        console.log('Continuing training...');
-      }
-    });
-};
   
 const classify = () => {
     setInterval(() => {
@@ -64,11 +52,6 @@ const classify = () => {
         label.innerHTML = result[0].label;
         });
     }, 1000);
-};
-
-const save = () => {
-    featureExtractor.save()
-    console.log("Model saved!")
 };
 
 label.innerText = "";
