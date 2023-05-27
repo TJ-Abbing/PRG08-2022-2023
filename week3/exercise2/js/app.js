@@ -15,22 +15,29 @@ const labelBtns = ["labelOne", "labelTwo", "labelThree"].map(label => {
     });
     return btn;
 });
-    
+
 document.querySelector('#train').addEventListener("click", () => {
     classifier.train((lossValue) => {
         console.log('Loss is', lossValue);
         if (lossValue === null) {
-          console.log('Training completed.');
-          classify();
+            console.log('Training completed.');
+            classify();
         } else {
-          console.log('Continuing training...');
+            console.log('Continuing training...');
         }
     });
-})
+});
 
 document.querySelector('#save').addEventListener("click", () => {
     featureExtractor.save();
     console.log("Model saved!");
+});
+
+document.querySelector('#load').addEventListener("click", () => {
+    featureExtractor.load('model/model.json', () => {
+        console.log("Previously saved model loaded!");
+        classify();
+    });
 });
 
 if (navigator.mediaDevices.getUserMedia) {
@@ -43,13 +50,13 @@ if (navigator.mediaDevices.getUserMedia) {
             console.log("Something went wrong!");
         });
 }
-  
+
 const classify = () => {
     setInterval(() => {
         classifier.classify(video, (err, result) => {
-        if (err) console.log(err);
-        console.log(result);
-        label.innerHTML = result[0].label;
+            if (err) console.log(err);
+            console.log(result);
+            label.innerHTML = result[0].label;
         });
     }, 1000);
 };
