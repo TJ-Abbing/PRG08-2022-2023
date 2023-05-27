@@ -56,7 +56,6 @@ const train = () => {
     });
 };
   
-  
 const classify = () => {
     setInterval(() => {
         classifier.classify(video, (err, result) => {
@@ -68,13 +67,8 @@ const classify = () => {
 };
 
 const save = () => {
-    featureExtractor.save('feature_extractor_savefile', (error) => {
-        if (error) {
-            console.error('Error while saving feature extractor:', error);
-        } else {
-            console.log('Feature extractor file saved.');
-        }
-    });
+    featureExtractor.save()
+    console.log("Model saved!")
 };
 
 label.innerText = "";
