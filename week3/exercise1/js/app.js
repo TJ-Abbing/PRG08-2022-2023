@@ -1,5 +1,6 @@
 const image = document.getElementById("image");
 const label = document.getElementById("label");
+const uploadInput = document.getElementById("uploadInput");
 
 // Initialize the Image Classifier method with MobileNet
 const classifier = ml5.imageClassifier('MobileNet', modelLoaded);
@@ -7,10 +8,9 @@ const classifier = ml5.imageClassifier('MobileNet', modelLoaded);
 // When the model is loaded
 function modelLoaded() {
   console.log('Model Loaded!');
-  classifyImage();
 }
 
-// Make a prediction with a selected image
+// Make a prediction with the selected image
 function classifyImage() {
   classifier.classify(image, (err, results) => {
     if (err) {
@@ -23,6 +23,17 @@ function classifyImage() {
     speak(predictedLabel); // Call the speak function with the predicted label
   });
 }
+
+// Event listener for the image upload button
+uploadInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    image.src = URL.createObjectURL(file);
+    image.onload = () => {
+      classifyImage();
+    };
+  }
+});
 
 const labelOneBtn = document.querySelector("#labelOne");
 const labelTwoBtn = document.querySelector("#labelTwo");
