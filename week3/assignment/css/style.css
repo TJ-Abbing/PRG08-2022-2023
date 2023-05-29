@@ -2,7 +2,7 @@ body {
     font-family: sans-serif;
 }
 
-#label {
+#textOutput {
     width: 533px;
     height: 20px;
     color: white;

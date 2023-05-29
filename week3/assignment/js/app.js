@@ -1,5 +1,5 @@
 const video = document.getElementById("webcam");
-const label = document.getElementById("label");
+const texOutput = document.getElementById("textOutput");
 
 const options = { numLabels: 3 };
 // Extract the already learned features from MobileNet
@@ -43,7 +43,7 @@ document.querySelector('#load').addEventListener("click", () => {
 document.querySelector('#play').addEventListener("click", () => {
   const randomIndex = Math.floor(Math.random() * labelBtns.length);
   const randomLabel = labelBtns[randomIndex].id;
-  label.innerHTML = `Go and find; ${randomLabel}`;
+  textOutput.innerHTML = `Go and find; ${randomLabel}`;
 });
 
 if (navigator.mediaDevices.getUserMedia) {
@@ -62,9 +62,9 @@ const classify = () => {
     classifier.classify(video, (err, result) => {
       if (err) console.log(err);
       console.log(result);
-      label.innerHTML = result[0].label;
+      textOutput.innerHTML = result[0].label;
     });
   }, 1000);
 };
 
-label.innerText = "";
+textOutput.innerText = "";
