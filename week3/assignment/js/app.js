@@ -8,57 +8,63 @@ const featureExtractor = ml5.featureExtractor('MobileNet', console.log('Model Lo
 const classifier = featureExtractor.classification(video, options, console.log('The video is ready.'));
 
 const labelBtns = ["labelRed", "labelBlue", "labelWhite"].map(label => {
-    const btn = document.querySelector(`#${label}`);
-    btn.addEventListener("click", () => {
-        classifier.addImage(label);
-        console.log(`Classified ${label}.`);
-    });
-    return btn;
+  const btn = document.querySelector(`#${label}`);
+  btn.addEventListener("click", () => {
+    classifier.addImage(label);
+    console.log(`Classified ${label}.`);
+  });
+  return btn;
 });
 
 document.querySelector('#train').addEventListener("click", () => {
-    classifier.train((lossValue) => {
-        console.log('Loss is', lossValue);
-        if (lossValue === null) {
-            console.log('Training completed.');
-            classify();
-        } else {
-            console.log('Continuing training...');
-        }
-    });
+  classifier.train((lossValue) => {
+    console.log('Loss is', lossValue);
+    if (lossValue === null) {
+      console.log('Training completed.');
+      classify();
+    } else {
+      console.log('Continuing training...');
+    }
+  });
 });
 
 document.querySelector('#save').addEventListener("click", () => {
-    featureExtractor.save();
-    console.log("Model saved!");
+  featureExtractor.save();
+  console.log("Model saved!");
 });
 
 document.querySelector('#load').addEventListener("click", () => {
-    featureExtractor.load('model/model.json', () => {
-        console.log("Previously saved model loaded!");
-        classify();
-    });
+  featureExtractor.load('model/model.json', () => {
+    console.log("Previously saved model loaded!");
+    classify();
+  });
+});
+
+document.querySelector('#play').addEventListener("click", () => {
+  const randomIndex = Math.floor(Math.random() * labelBtns.length);
+  const randomLabel = labelBtns[randomIndex].id;
+  label.innerHTML = `Go and find; ${randomLabel}`;
 });
 
 if (navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-            video.srcObject = stream;
-        })
-        .catch((err) => {
-            console.log("Something went wrong!");
-        });
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+      video.srcObject = stream;
+    })
+    .catch((err) => {
+      console.log("Something went wrong!");
+    });
 }
 
 const classify = () => {
-    setInterval(() => {
-        classifier.classify(video, (err, result) => {
-            if (err) console.log(err);
-            console.log(result);
-            label.innerHTML = result[0].label;
-        });
-    }, 1000);
+  setInterval(() => {
+    classifier.classify(video, (err, result) => {
+      if (err) console.log(err);
+      console.log(result);
+      label.innerHTML = result[0].label;
+    });
+  }, 1000);
 };
 
 label.innerText = "";
