@@ -61,4 +61,4 @@ function speak(text) {
   }
 }
 
-speak("One moment please. We are analyzing the image you've provided.");
+speak("Upload an image please.");
