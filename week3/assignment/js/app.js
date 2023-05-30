@@ -14,6 +14,12 @@ function speak(text) {
 const video = document.getElementById("webcam");
 const textOutput = document.getElementById("textOutput");
 
+const labelNames = {
+  labelRed: "something red",
+  labelBlue: "something blue",
+  labelWhite: "something white"
+};
+
 const options = { numLabels: 3 };
 // Extract the already learned features from MobileNet
 const featureExtractor = ml5.featureExtractor('MobileNet', console.log('Model Loaded.'));
@@ -54,7 +60,7 @@ document.querySelector('#play').addEventListener("click", () => {
   load();
   const randomIndex = Math.floor(Math.random() * labelBtns.length);
   const randomLabel = labelBtns[randomIndex].id;
-  output = `Go and find; ${randomLabel}`;
+  output = `Go and find; ${labelNames[randomLabel]}`;
   textOutput.innerHTML = output;
   console.log(output);
 
@@ -70,11 +76,11 @@ document.querySelector('#play').addEventListener("click", () => {
         if (result && result.length > 0) {
           const classifiedLabel = result[0].label;
           if (classifiedLabel === generatedLabel) {
-            const speechText = `Great job. This is correct! You were asked to find ${generatedLabel} and you found ${classifiedLabel}!`;
+            const speechText = `Great job! This is correct! You were asked to find ${labelNames[generatedLabel]} and you found ${labelNames[classifiedLabel]}!`;
             textOutput.innerHTML = speechText;
             speak(speechText);
           } else {
-            const speechText = `Sorry. This is incorrect! You were asked to find ${generatedLabel} but you found ${classifiedLabel}!`;
+            const speechText = `Sorry, this is incorrect! You were asked to find ${labelNames[generatedLabel]} but you found ${labelNames[classifiedLabel]}!`;
             textOutput.innerHTML = speechText;
             speak(speechText);
           }
