@@ -44,22 +44,31 @@ document.querySelector('#play').addEventListener("click", () => {
   output = `Go and find; ${randomLabel}`;
   textOutput.innerHTML = output;
   console.log(output);
-});
 
-document.querySelector('#check').addEventListener("click", () => {
-  classifier.classify(video, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(`I think it's...`, result[0].label);
-      if (result && result.length > 0) {
-        textOutput.innerHTML = result[0].label;
+  // Store the generated label for comparison
+  const generatedLabel = randomLabel;
+
+  document.querySelector('#check').addEventListener("click", () => {
+    classifier.classify(video, (err, result) => {
+      if (err) {
+        console.log(err);
       } else {
-        textOutput.innerHTML = "Unable to classify";
+        console.log(`I think it's...`, result[0].label);
+        if (result && result.length > 0) {
+          const classifiedLabel = result[0].label;
+          if (classifiedLabel === generatedLabel) {
+            textOutput.innerHTML = "Correct!";
+          } else {
+            textOutput.innerHTML = "Incorrect!";
+          }
+        } else {
+          textOutput.innerHTML = "Unable to classify";
+        }
       }
-    }console.log(result)
+    });
   });
 });
+
 
 
 if (navigator.mediaDevices.getUserMedia) {
