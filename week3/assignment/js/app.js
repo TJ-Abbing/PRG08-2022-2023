@@ -1,5 +1,18 @@
+let synth = window.speechSynthesis;
+
+function speak(text) {
+  if (synth.speaking) {
+    console.log('still speaking...');
+    return;
+  }
+  if (text !== '') {
+    let utterThis = new SpeechSynthesisUtterance(text);
+    synth.speak(utterThis);
+  }
+}
+
 const video = document.getElementById("webcam");
-const texOutput = document.getElementById("textOutput");
+const textOutput = document.getElementById("textOutput");
 
 const options = { numLabels: 3 };
 // Extract the already learned features from MobileNet
@@ -57,12 +70,18 @@ document.querySelector('#play').addEventListener("click", () => {
         if (result && result.length > 0) {
           const classifiedLabel = result[0].label;
           if (classifiedLabel === generatedLabel) {
-            textOutput.innerHTML = "Correct!";
+            const speechText = `Great job. This is correct! You were asked to find ${generatedLabel} and you found ${classifiedLabel}!`;
+            textOutput.innerHTML = speechText;
+            speak(speechText);
           } else {
-            textOutput.innerHTML = "Incorrect!";
+            const speechText = `Sorry. This is incorrect! You were asked to find ${generatedLabel} but you found ${classifiedLabel}!`;
+            textOutput.innerHTML = speechText;
+            speak(speechText);
           }
         } else {
-          textOutput.innerHTML = "Unable to classify";
+          const speechText = "Unable to classify";
+          textOutput.innerHTML = speechText;
+          speak(speechText);
         }
       }
     });
