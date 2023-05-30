@@ -21,7 +21,7 @@ document.querySelector('#train').addEventListener("click", () => {
     console.log('Loss is', lossValue);
     if (lossValue === null) {
       console.log('Training completed.');
-      classify();
+      // classify();
     } else {
       console.log('Continuing training...');
     }
@@ -34,28 +34,51 @@ document.querySelector('#save').addEventListener("click", () => {
 });
 
 document.querySelector('#load').addEventListener("click", () => {
-  featureExtractor.load('model/model.json', () => {
-    console.log("Previously saved model loaded!");
-    classify();
-  });
+  load();
 });
 
 document.querySelector('#play').addEventListener("click", () => {
+  load();
   const randomIndex = Math.floor(Math.random() * labelBtns.length);
   const randomLabel = labelBtns[randomIndex].id;
-  textOutput.innerHTML = `Go and find; ${randomLabel}`;
+  output = `Go and find; ${randomLabel}`;
+  textOutput.innerHTML = output;
+  console.log(output);
 });
+
+document.querySelector('#check').addEventListener("click", () => {
+  classifier.classify(video, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(`I think it's...`, result[0].label);
+      if (result && result.length > 0) {
+        textOutput.innerHTML = result[0].label;
+      } else {
+        textOutput.innerHTML = "Unable to classify";
+      }
+    }console.log(result)
+  });
+});
+
 
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then((stream) => {
+  .getUserMedia({ video: true })
+  .then((stream) => {
       video.srcObject = stream;
     })
     .catch((err) => {
       console.log("Something went wrong!");
     });
 }
+
+const load = () => {
+
+  featureExtractor.load('model/model.json'), () => {
+    console.log("Previously saved model loaded!");
+  }
+};
 
 const classify = () => {
   setInterval(() => {
