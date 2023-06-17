@@ -1,10 +1,7 @@
-const canvas = document.getElementById('myChart')
-let myChart
+const canvas = document.getElementById('myChart');
+let myChart;
 
-// documentatie 
-// https://www.chartjs.org/docs/latest/charts/scatter.html
-
-export function createChart(columns, labelx, labely){
+export function createChart(columns, labelx, labely) {
     const config = {
         type: 'scatter',
         data: {
@@ -17,10 +14,10 @@ export function createChart(columns, labelx, labely){
         options: {
             scales: {
                 x: {
-                    title: {display: true, text: labelx}
+                    title: { display: true, text: labelx }
                 },
                 y: {
-                    title: {display: true, text: labely}
+                    title: { display: true, text: labely }
                 }
             },
             layout: {
@@ -29,16 +26,31 @@ export function createChart(columns, labelx, labely){
         }
     }
 
-    myChart = new Chart(canvas, config)
+    myChart = new Chart(canvas, config);
 }
 
-// update an existing chart
-// https://www.chartjs.org/docs/latest/developers/updates.html
-export function updateChart(label, data){
+export function updateChart(label, data) {
     myChart.data.datasets.push({
         label,
         data,
         backgroundColor: 'rgb(255, 44, 44)'
-    })
-    myChart.update()
+    });
+    myChart.update();
 }
+
+const data = [
+    { horsepower: 130, mpg: 18 },
+    { horsepower: 165, mpg: 15 },
+    { horsepower: 225, mpg: 14 },
+    { horsepower: 97, mpg: 18 },
+    { horsepower: 88, mpg: 27 },
+    { horsepower: 193, mpg: 9 },
+    { horsepower: 80, mpg: 25 },
+];
+
+const chartdata = data.map(car => ({
+    x: car.horsepower,
+    y: car.mpg,
+}));
+
+createChart(chartdata, "Horsepower", "MPG");
