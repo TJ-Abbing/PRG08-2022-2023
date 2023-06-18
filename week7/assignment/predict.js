@@ -2,11 +2,7 @@ const canvas = document.getElementById('myChart')
 let myChart
 let nn
 nn = ml5.neuralNetwork({ task: 'regression', debug: true })
-document.getElementById("load").addEventListener("click", function() {
-    console.log(`Loading model...`)
-    nn.load('./model/model.json');
-});
-
+nn.load('./model/model.json');
 // documentatie 
 // https://www.chartjs.org/docs/latest/charts/scatter.html
 
@@ -50,10 +46,10 @@ export function updateChart(label, data){
 }
 
 document.getElementById("btn").addEventListener("click", function() {
-  const cores = parseFloat(document.getElementById("cores").value);
-  const cpu = parseFloat(document.getElementById("cpu").value);
-  const memory = parseFloat(document.getElementById("memory").value);
-  const storage = parseFloat(document.getElementById("storage").value);
+    const cores = parseFloat(document.getElementById("cores").value);
+    const cpu = parseFloat(document.getElementById("cpu").value);
+    const memory = parseFloat(document.getElementById("memory").value);
+    const storage = parseFloat(document.getElementById("storage").value);
   
   nn.predict([cores, cpu, memory, storage], (err, results) => {
       if (err) {
