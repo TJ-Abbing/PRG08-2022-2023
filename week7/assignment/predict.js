@@ -1,6 +1,11 @@
 const canvas = document.getElementById('myChart')
 let myChart
 let nn
+nn = ml5.neuralNetwork({ task: 'regression', debug: true })
+document.getElementById("load").addEventListener("click", function() {
+    console.log(`Loading model...`)
+    nn.load('./model/model.json');
+});
 
 // documentatie 
 // https://www.chartjs.org/docs/latest/charts/scatter.html
@@ -44,49 +49,18 @@ export function updateChart(label, data){
     myChart.update()
 }
 
-function loadData(){
-    Papa.parse("./data/mobilephones.csv", {
-        download:true,
-        header:true, 
-        dynamicTyping:true,
-        complete: results => checkData(results.data)
-    })
-} loadData();
-
-function checkData(data){
-
-    console.table(data)
-
-    // data voorbereiden
-    data.sort(() => (Math.random() - 0.5))
-    let trainData = data.slice(0, Math.floor(data.length * 0.8))
-    let testData = data.slice(Math.floor(data.length * 0.8) + 1)
-
-    // neural network aanmaken
-    nn = ml5.neuralNetwork({ task: 'regression', debug: true })
-
-    // data toevoegen aan neural network
-    for(let phone of trainData){
-        nn.addData({cores: phone.cores, cpu :phone.cores, memory: phone.memory, storage: phone.storage }, {  price: phone.price })
-    }
-
-    // normalize
-    nn.normalizeData()
-
-    nn.train({ epochs: 10 }, () => console.log("Finished training!"));
-
-    async function makePrediction() {
-        for (let phone of testData) {
-            const testPhone = { cores: phone.cores, cpu: phone.cpu, memory: phone.memory, storage: phone.storage };
-            const pred = await nn.predict(testPhone);
-            console.log(`Predicted price for phone with the following details; 
-            \n cores: ${phone.cores}
-            \n cpu: ${phone.cpu}
-            \n memory: ${phone.memory}
-            \n storage: ${phone.storage}
-            \n price: ${pred[0].price}`);
-        }
-    }
-    makePrediction();
-    document.getElementById("save").addEventListener("click", nn.save());
-}
+document.getElementById("btn").addEventListener("click", function() {
+  const cores = parseFloat(document.getElementById("cores").value);
+  const cpu = parseFloat(document.getElementById("cpu").value);
+  const memory = parseFloat(document.getElementById("memory").value);
+  const storage = parseFloat(document.getElementById("storage").value);
+  
+  nn.predict([cores, cpu, memory, storage], (err, results) => {
+      if (err) {
+          console.error(err);
+      } else {
+          const resultElement = document.getElementById("result");
+          resultElement.innerHTML = `Voorspelling van de prijs is ${results[0].value.toFixed(2)}`
+      }
+  });
+});
