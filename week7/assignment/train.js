@@ -73,7 +73,7 @@ function checkData(data){
     // normalize
     nn.normalizeData()
 
-    nn.train({ epochs: 10 }, () => console.log("Finished training!"));
+    nn.train({ epochs: 60 }, () => console.log("Finished training!"));
 
     async function makePrediction() {
         for (let phone of testData) {
