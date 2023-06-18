@@ -1,3 +1,4 @@
+const nn = ml5.neuralNetwork({ task: 'regression', debug: true })
 const canvas = document.getElementById('myChart')
 let myChart
 
@@ -56,9 +57,47 @@ function checkData(data) {
     console.table(data);
 
     const chartdata = data.map(car => ({
-        x: car.weight,
+        x: car.horsepower,
         y: car.mpg,
     }));
 
     createChart(chartdata, "Weight", "MPG");
+
+    // shuffle
+    data.sort(() => (Math.random() - 0.5))
+    
+    // een voor een de data toevoegen aan het neural network
+    for (let car of data) {
+        nn.addData({ horsepower: car.horsepower }, { mpg: car.mpg })
+    }
+    
+    // normalize
+    nn.normalizeData()
+    
+    function startTraining() {
+        nn.train({ epochs: 40 }, () => finishedTraining()) 
+    } startTraining();
+    
+    async function finishedTraining(){
+        console.log("Finished training!")
+
+        let predictions = []
+        for (let hp = 40; hp < 250; hp += 2) {
+            const pred = await nn.predict({horsepower: hp})
+            predictions.push({x: hp, y: pred[0].mpg})
+        }
+        updateChart("Predictions", predictions)
+    }
+
+    document.getElementById("btn").addEventListener("click", makePrediction);
+
+    async function makePrediction() {
+        const field = document.getElementById("field");
+        const horsepower = Number(field.value);
+    
+        const results = await nn.predict({ horsepower: horsepower });
+        console.log(`Geschat verbruik: ${results[0].mpg}`);
+    }
+    makePrediction();
+    
 }
